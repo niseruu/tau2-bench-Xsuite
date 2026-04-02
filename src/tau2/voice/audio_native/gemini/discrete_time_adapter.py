@@ -44,11 +44,13 @@ from tau2.data_model.message import ToolCall
 from tau2.environment.tool import Tool
 from tau2.voice.audio_native.adapter import DiscreteTimeAdapter
 from tau2.voice.audio_native.async_loop import BackgroundAsyncLoop
+from tau2.voice.audio_native.audio_converter import StreamingTelephonyConverter
 from tau2.voice.audio_native.gemini.audio_utils import (
     GEMINI_INPUT_BYTES_PER_SECOND,
+    GEMINI_INPUT_SAMPLE_RATE,
     GEMINI_OUTPUT_BYTES_PER_SECOND,
+    GEMINI_OUTPUT_SAMPLE_RATE,
     TELEPHONY_BYTES_PER_SECOND,
-    StreamingGeminiConverter,
     calculate_gemini_bytes_per_tick,
 )
 from tau2.voice.audio_native.gemini.events import (
@@ -148,7 +150,10 @@ class DiscreteTimeGeminiAdapter(DiscreteTimeAdapter):
         self._owns_provider = provider is None
 
         # Audio format converter (preserves state for streaming)
-        self._audio_converter = StreamingGeminiConverter()
+        self._audio_converter = StreamingTelephonyConverter(
+            input_sample_rate=GEMINI_INPUT_SAMPLE_RATE,
+            output_sample_rate=GEMINI_OUTPUT_SAMPLE_RATE,
+        )
 
         # Async event loop management
         self._bg_loop = BackgroundAsyncLoop()

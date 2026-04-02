@@ -47,7 +47,7 @@ from tau2.data_model.audio import AudioFormat
 from tau2.data_model.message import ToolCall
 from tau2.environment.tool import Tool
 from tau2.voice.audio_native.adapter import DiscreteTimeAdapter
-from tau2.voice.audio_native.livekit.audio_utils import StreamingLiveKitConverter
+from tau2.voice.audio_native.audio_converter import StreamingTelephonyConverter
 from tau2.voice.audio_native.livekit.config import CascadedConfig, DeepgramTTSConfig
 from tau2.voice.audio_native.livekit.provider import (
     CascadedEvent,
@@ -134,8 +134,9 @@ class LiveKitCascadedAdapter(DiscreteTimeAdapter):
         tts_sample_rate = 24000  # default
         if isinstance(self.cascaded_config.tts, DeepgramTTSConfig):
             tts_sample_rate = self.cascaded_config.tts.sample_rate
-        self._audio_converter = StreamingLiveKitConverter(
-            tts_sample_rate=tts_sample_rate
+        self._audio_converter = StreamingTelephonyConverter(
+            input_sample_rate=16000,
+            output_sample_rate=tts_sample_rate,
         )
 
     @property

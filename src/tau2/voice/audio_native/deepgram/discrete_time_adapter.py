@@ -49,10 +49,10 @@ from tau2.data_model.message import ToolCall
 from tau2.environment.tool import Tool
 from tau2.voice.audio_native.adapter import DiscreteTimeAdapter
 from tau2.voice.audio_native.async_loop import BackgroundAsyncLoop
+from tau2.voice.audio_native.audio_converter import StreamingTelephonyConverter
 from tau2.voice.audio_native.deepgram.audio_utils import (
     DEEPGRAM_OUTPUT_BYTES_PER_SECOND,
     TELEPHONY_BYTES_PER_SECOND,
-    StreamingDeepgramConverter,
     calculate_deepgram_bytes_per_tick,
 )
 from tau2.voice.audio_native.deepgram.events import (
@@ -140,7 +140,10 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
         self._owns_provider = provider is None
 
         # Audio format converter (preserves state for streaming)
-        self._audio_converter = StreamingDeepgramConverter()
+        self._audio_converter = StreamingTelephonyConverter(
+            input_sample_rate=16000,
+            output_sample_rate=16000,
+        )
 
         # Async event loop management
         self._bg_loop = BackgroundAsyncLoop()

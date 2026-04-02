@@ -53,9 +53,7 @@ from tau2.data_model.message import ToolCall
 from tau2.environment.tool import Tool
 from tau2.voice.audio_native.adapter import DiscreteTimeAdapter
 from tau2.voice.audio_native.async_loop import BackgroundAsyncLoop
-from tau2.voice.audio_native.qwen.audio_utils import (
-    StreamingQwenConverter,
-)
+from tau2.voice.audio_native.audio_converter import StreamingTelephonyConverter
 from tau2.voice.audio_native.qwen.events import (
     QwenAudioDeltaEvent,
     QwenAudioDoneEvent,
@@ -138,7 +136,10 @@ class DiscreteTimeQwenAdapter(DiscreteTimeAdapter):
         self.model = model
 
         # Audio converter for telephony ↔ Qwen format
-        self._audio_converter = StreamingQwenConverter()
+        self._audio_converter = StreamingTelephonyConverter(
+            input_sample_rate=16000,
+            output_sample_rate=24000,
+        )
 
         # Provider - created lazily if not provided
         self._provider = provider
