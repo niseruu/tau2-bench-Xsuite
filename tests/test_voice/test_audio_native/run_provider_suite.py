@@ -74,9 +74,9 @@ def run_and_summarize() -> int:
             status, detail = "✅ PASS", ""
 
         short = name.replace(f"[{provider}-", "[").replace(f"[{provider}]", "")
-        results.append((provider, order, status, short, detail))
+        results.append((provider, order, status, short, detail, params))
 
-    results.sort(key=lambda r: (r[0], r[1]))
+    results.sort(key=lambda r: (r[0], r[1], r[5]))
 
     ts = root.find("testsuite")
     total = int(ts.get("tests", 0))
@@ -91,7 +91,7 @@ def run_and_summarize() -> int:
     lines.append("")
 
     current = ""
-    for provider, _, status, short, _ in results:
+    for provider, _, status, short, _, _ in results:
         if provider != current:
             if current:
                 lines.append("")
@@ -99,7 +99,7 @@ def run_and_summarize() -> int:
             current = provider
         lines.append(f"  {status}  {short}")
 
-    fail_details = [(s, d) for _, _, st, s, d in results if "FAIL" in st]
+    fail_details = [(s, d) for _, _, st, s, d, _ in results if "FAIL" in st]
     if fail_details:
         lines.append("")
         lines.append("Failure details:")

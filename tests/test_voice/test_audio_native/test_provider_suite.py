@@ -49,6 +49,7 @@ Save a glanceable results summary (writes provider_suite_results.txt):
 """
 
 import os
+import time
 from pathlib import Path
 from typing import List, Optional
 
@@ -351,6 +352,35 @@ class TestConnection:
         result = adapter.run_tick(make_silence(), tick_number=1)
         assert result.tick_number == 1
         assert_played_audio_length(result, adapter)
+
+
+# =============================================================================
+# Tests: Tick timing
+# =============================================================================
+
+
+class TestTickTiming:
+    """Verify ticks respect wall-clock timing bounds."""
+
+    def test_tick_duration_bounds(self, connected_adapter: DiscreteTimeAdapter):
+        """Silence ticks should take ~tick_duration_ms: not too fast, not too slow."""
+        silence = make_silence()
+        times = []
+        for tick in range(5):
+            start = time.time()
+            connected_adapter.run_tick(silence, tick_number=tick + 1)
+            elapsed_ms = (time.time() - start) * 1000
+            times.append(elapsed_ms)
+
+        for i, t in enumerate(times):
+            assert t >= TICK_DURATION_MS * 0.9, (
+                f"Tick {i + 1} too fast: {t:.0f}ms, "
+                f"expected >= {TICK_DURATION_MS * 0.9:.0f}ms"
+            )
+            assert t <= TICK_DURATION_MS * 1.5, (
+                f"Tick {i + 1} too slow: {t:.0f}ms, "
+                f"expected <= {TICK_DURATION_MS * 1.5:.0f}ms"
+            )
 
 
 # =============================================================================

@@ -34,7 +34,7 @@ import asyncio
 import base64
 import json
 import uuid
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
@@ -42,17 +42,14 @@ from tau2.config import (
     DEFAULT_AUDIO_NATIVE_CONNECT_TIMEOUT,
     DEFAULT_AUDIO_NATIVE_DISCONNECT_TIMEOUT,
     DEFAULT_AUDIO_NATIVE_TICK_TIMEOUT_BUFFER,
-    DEFAULT_AUDIO_NATIVE_VOIP_PACKET_INTERVAL_MS,
-    TELEPHONY_ULAW_SILENCE,
 )
 from tau2.data_model.message import ToolCall
 from tau2.environment.tool import Tool
 from tau2.voice.audio_native.adapter import DiscreteTimeAdapter
 from tau2.voice.audio_native.async_loop import BackgroundAsyncLoop
+from tau2.voice.audio_native.audio_converter import StreamingTelephonyConverter
 from tau2.voice.audio_native.deepgram.audio_utils import (
     DEEPGRAM_OUTPUT_BYTES_PER_SECOND,
-    TELEPHONY_BYTES_PER_SECOND,
-    StreamingDeepgramConverter,
     calculate_deepgram_bytes_per_tick,
 )
 from tau2.voice.audio_native.deepgram.events import (
@@ -73,8 +70,6 @@ from tau2.voice.audio_native.deepgram.provider import (
 from tau2.voice.audio_native.tick_result import (
     TickResult,
     UtteranceTranscript,
-    buffer_excess_audio,
-    get_proportional_transcript,
 )
 
 
@@ -99,8 +94,6 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
         provider: Optional provider instance. Created lazily if not provided.
     """
 
-    VOIP_PACKET_INTERVAL_MS = DEFAULT_AUDIO_NATIVE_VOIP_PACKET_INTERVAL_MS
-
     def __init__(
         self,
         tick_duration_ms: int,
@@ -120,11 +113,10 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
             llm_model: LLM model (e.g., "gpt-4o-mini").
             tts_model: TTS model including voice (e.g., "aura-2-thalia-en").
         """
-        super().__init__(tick_duration_ms)
+        super().__init__(tick_duration_ms, send_audio_instant=send_audio_instant)
 
-        self.send_audio_instant = send_audio_instant
         self._chunk_size = int(
-            DEEPGRAM_INPUT_BYTES_PER_SECOND * self.VOIP_PACKET_INTERVAL_MS / 1000
+            DEEPGRAM_INPUT_BYTES_PER_SECOND * self._voip_interval_ms / 1000
         )
         self.llm_provider = llm_provider
         self.llm_model = llm_model
@@ -140,27 +132,16 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
         self._owns_provider = provider is None
 
         # Audio format converter (preserves state for streaming)
-        self._audio_converter = StreamingDeepgramConverter()
+        self._audio_converter = StreamingTelephonyConverter(
+            input_sample_rate=16000,
+            output_sample_rate=16000,
+        )
 
         # Async event loop management
         self._bg_loop = BackgroundAsyncLoop()
         self._connected = False
 
-        # Tick state
-        self._tick_count = 0
-        self._cumulative_user_audio_ms = 0
-
-        # Buffered audio and transcripts
-        self._buffered_agent_audio: List[Tuple[bytes, Optional[str]]] = []
-        self._utterance_transcripts: dict[str, UtteranceTranscript] = {}
-        self._current_item_id: Optional[str] = None
-        self._skip_item_id: Optional[str] = None
-
-        # Tool result queue (for sending tool results in next tick)
-        self._pending_tool_results: List[Tuple[str, str, str, bool]] = []
-
-        # Track tool call info for Deepgram
-        # Maps call_id -> function_name
+        # Deepgram-specific: maps call_id -> function_name
         self._tool_call_info: Dict[str, str] = {}
 
     @property
@@ -257,8 +238,7 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
         self._connected = False
         self._tick_count = 0
         self._cumulative_user_audio_ms = 0
-        self._buffered_agent_audio.clear()
-        self._utterance_transcripts.clear()
+        self.clear_buffers()
         self._tool_call_info.clear()
         self._audio_converter.reset()
         logger.info("DiscreteTimeDeepgramAdapter disconnected")
@@ -299,10 +279,24 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
             logger.error(f"Error in run_tick (tick={tick_number}): {e}")
             raise
 
-    async def _async_run_tick(self, user_audio: bytes, tick_number: int) -> TickResult:
-        """Async tick execution."""
-        # Send any pending tool results first
-        for call_id, name, result_str, request_response in self._pending_tool_results:
+    def send_tool_result(
+        self,
+        call_id: str,
+        result: str,
+        request_response: bool = True,
+        is_error: bool = False,
+    ) -> None:
+        """Queue a tool result, resolving the Deepgram function name first."""
+        name = self._tool_call_info.pop(call_id, "unknown")
+        super().send_tool_result(call_id, result, request_response, is_error)
+        # Re-patch the last entry to include the function name for flush
+        # Base class stores (call_id, result, request_response, is_error)
+        # We need (call_id, name, result, request_response) for Deepgram
+        self._pending_tool_results[-1] = (call_id, name, result, request_response)
+
+    async def _flush_pending_tool_results(self) -> None:
+        """Send pending tool results to Deepgram."""
+        for call_id, name, result_str, _request_response in self._pending_tool_results:
             await self.provider.send_tool_result(
                 call_id=call_id,
                 function_name=name,
@@ -310,68 +304,39 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
             )
         self._pending_tool_results.clear()
 
+    async def _execute_tick(
+        self,
+        user_audio: bytes,
+        tick_number: int,
+        result: TickResult,
+        tick_start: float,
+    ) -> None:
+        """Deepgram-specific: convert audio, send, receive events, process."""
         # Convert user audio from telephony to Deepgram format
         deepgram_audio = self._audio_converter.convert_input(user_audio)
 
-        # Calculate timing
-        tick_start = asyncio.get_running_loop().time()
-
-        # Create tick result
-        result = TickResult(
-            tick_number=tick_number,
-            audio_sent_bytes=len(user_audio),
-            audio_sent_duration_ms=(len(user_audio) / TELEPHONY_BYTES_PER_SECOND)
-            * 1000,
-            user_audio_data=user_audio,
-            cumulative_user_audio_at_tick_start_ms=self._cumulative_user_audio_ms,
-            bytes_per_tick=self.bytes_per_tick,
-            bytes_per_second=TELEPHONY_BYTES_PER_SECOND,
-            silence_byte=TELEPHONY_ULAW_SILENCE,
-        )
-
-        # Add any buffered agent audio from previous tick
-        for chunk_data, item_id in self._buffered_agent_audio:
-            result.agent_audio_chunks.append((chunk_data, item_id))
-        self._buffered_agent_audio.clear()
-
-        # Carry over skip state from previous tick
-        result.skip_item_id = self._skip_item_id
-
-        # Receive events for tick duration
-        deepgram_audio_received: List[Tuple[bytes, Optional[str]]] = []
-
-        # Send audio and receive events concurrently
-        async def send_audio():
-            """Send audio (instant or chunked based on config)."""
-            if len(deepgram_audio) == 0:
-                return
-            if self.send_audio_instant:
-                await self.provider.send_audio(deepgram_audio)
-            else:
-                offset = 0
-                while offset < len(deepgram_audio):
-                    chunk = deepgram_audio[offset : offset + self._chunk_size]
-                    await self.provider.send_audio(chunk)
-                    offset += len(chunk)
-                    await asyncio.sleep(self.VOIP_PACKET_INTERVAL_MS / 1000)
+        deepgram_audio_received: list[tuple[bytes, Optional[str]]] = []
 
         async def receive_events():
             elapsed_so_far = asyncio.get_running_loop().time() - tick_start
             remaining = max(0.01, (self.tick_duration_ms / 1000) - elapsed_so_far)
             return await self.provider.receive_events_for_duration(remaining)
 
-        _, events = await asyncio.gather(send_audio(), receive_events())
+        _, events = await asyncio.gather(
+            self._send_audio_chunked(
+                deepgram_audio, self.provider.send_audio, self._chunk_size
+            ),
+            receive_events(),
+        )
 
-        # Process ALL received events
         for event in events:
-            await self._process_event(result, event, deepgram_audio_received)
+            self._process_event(result, event, deepgram_audio_received)
 
         # Convert Deepgram audio to telephony format and add to result
         for deepgram_bytes, item_id in deepgram_audio_received:
             telephony_bytes = self._audio_converter.convert_output(deepgram_bytes)
             result.agent_audio_chunks.append((telephony_bytes, item_id))
 
-        # Log audio conversion result
         if deepgram_audio_received:
             total_deepgram = sum(len(d) for d, _ in deepgram_audio_received)
             total_telephony = sum(len(d) for d, _ in result.agent_audio_chunks)
@@ -380,39 +345,16 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
                 f"{total_deepgram} deepgram bytes -> {total_telephony} telephony bytes"
             )
 
-        # Record simulation timing
-        result.tick_sim_duration_ms = result.audio_sent_duration_ms
-
-        # Move excess agent audio to buffer for next tick
-        self._buffered_agent_audio = buffer_excess_audio(result, self.bytes_per_tick)
-
-        # Calculate proportional transcript
-        result.proportional_transcript = get_proportional_transcript(
-            result.agent_audio_chunks, self._utterance_transcripts
-        )
-
-        # Update skip state for next tick
-        self._skip_item_id = result.skip_item_id
-
-        # Update cumulative user audio tracking
-        self._cumulative_user_audio_ms += int(result.audio_sent_duration_ms)
-
-        logger.info(f"Tick {tick_number} completed:\n{result.summary()}")
-
-        return result
-
-    async def _process_event(
+    def _process_event(
         self,
         result: TickResult,
         event: Any,
-        deepgram_audio_received: List[Tuple[bytes, Optional[str]]],
+        deepgram_audio_received: list[tuple[bytes, Optional[str]]],
     ) -> None:
         """Process a Deepgram event."""
         result.events.append(event)
 
-        # Handle audio events - binary audio is converted to DeepgramAudioEvent by provider
         if isinstance(event, DeepgramAudioEvent):
-            # Decode base64 audio
             audio_data = base64.b64decode(event.audio) if event.audio else b""
             logger.debug(
                 f"DeepgramAudioEvent: {len(audio_data)} bytes, "
@@ -425,7 +367,7 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
                 if result.skip_item_id is not None and item_id == result.skip_item_id:
                     estimated_telephony_bytes = int(
                         len(audio_data)
-                        * TELEPHONY_BYTES_PER_SECOND
+                        * self.audio_format.bytes_per_second
                         / DEEPGRAM_OUTPUT_BYTES_PER_SECOND
                     )
                     result.truncated_audio_bytes += estimated_telephony_bytes
@@ -439,7 +381,7 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
                         )
                     estimated_telephony_bytes = int(
                         len(audio_data)
-                        * TELEPHONY_BYTES_PER_SECOND
+                        * self.audio_format.bytes_per_second
                         / DEEPGRAM_OUTPUT_BYTES_PER_SECOND
                     )
                     self._utterance_transcripts[item_id].add_audio(
@@ -447,7 +389,6 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
                     )
 
         elif isinstance(event, DeepgramConversationTextEvent):
-            # Track transcripts for proportional distribution
             if event.role == "assistant" and event.content:
                 item_id = self._current_item_id or str(uuid.uuid4())[:8]
                 if item_id not in self._utterance_transcripts:
@@ -471,30 +412,24 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
             result.skip_item_id = self._current_item_id
 
             # Clear current item_id so next response gets a new one
-            # This prevents the skip_item_id from blocking all future audio
             self._current_item_id = None
 
             # Reset audio converter state after interruption
             self._audio_converter.reset()
 
         elif isinstance(event, DeepgramAgentStartedSpeakingEvent):
-            # New agent utterance
             self._current_item_id = str(uuid.uuid4())[:8]
             logger.debug(f"Agent started speaking (item_id={self._current_item_id})")
 
         elif isinstance(event, DeepgramAgentAudioDoneEvent):
             logger.debug("Agent audio done")
-            # Clear skip state - the previous utterance is complete
             self._skip_item_id = None
             result.skip_item_id = None
 
         elif isinstance(event, DeepgramFunctionCallRequestEvent):
-            # Process function calls
             for func in event.functions:
-                # Store function name for when we send the result back
                 self._tool_call_info[func.id] = func.name
 
-                # Parse arguments
                 try:
                     arguments = json.loads(func.arguments) if func.arguments else {}
                 except json.JSONDecodeError:
@@ -514,39 +449,7 @@ class DiscreteTimeDeepgramAdapter(DiscreteTimeAdapter):
             )
 
         elif isinstance(event, DeepgramTimeoutEvent):
-            # Normal timeout, continue
             pass
 
         else:
             logger.debug(f"Event {type(event).__name__} received")
-
-    def send_tool_result(
-        self,
-        call_id: str,
-        result: str,
-        request_response: bool = True,
-        is_error: bool = False,
-    ) -> None:
-        """Queue a tool result to be sent in the next tick.
-
-        Args:
-            call_id: The tool call ID.
-            result: The tool result as a string.
-            request_response: If True, request a response after sending.
-            is_error: If True, the tool call failed. Currently unused by Deepgram.
-        """
-        # Look up function name from our tracking dictionary
-        name = self._tool_call_info.pop(call_id, "unknown")
-
-        # Queue for sending in next tick
-        self._pending_tool_results.append((call_id, name, result, request_response))
-        logger.debug(f"Queued tool result for {name}(call_id={call_id})")
-
-    def clear_buffers(self) -> None:
-        """Clear all internal audio and transcript buffers."""
-        self._buffered_agent_audio.clear()
-        self._utterance_transcripts.clear()
-        self._pending_tool_results.clear()
-        self._tool_call_info.clear()
-        self._audio_converter.reset()
-        self._skip_item_id = None

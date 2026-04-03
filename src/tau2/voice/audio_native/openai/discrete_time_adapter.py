@@ -434,3 +434,9 @@ class DiscreteTimeAudioNativeAdapter(DiscreteTimeAdapter):
             self._tick_runner.completed_utterances = []
             self._tick_runner.skip_item_id = None
         self._pending_tool_results.clear()
+
+    async def _execute_tick(self, user_audio, tick_number, result, tick_start: float):
+        raise NotImplementedError("OpenAI uses its own run_tick")
+
+    async def _flush_pending_tool_results(self):
+        raise NotImplementedError("OpenAI uses its own run_tick")
