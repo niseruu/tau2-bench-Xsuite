@@ -70,9 +70,6 @@ class DiscreteTimeAudioNativeAdapter(DiscreteTimeAdapter):
         model: Optional[str] = None,
         provider: Optional[OpenAIRealtimeProvider] = None,
         audio_format: Optional[AudioFormat] = None,
-        # Kept for backward compatibility but ignored
-        buffer_until_complete: bool = False,
-        fast_forward_mode: bool = False,
     ):
         super().__init__(
             tick_duration_ms,

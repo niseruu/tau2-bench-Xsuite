@@ -60,8 +60,6 @@ from tau2.config import (
     AUDIO_NATIVE_PROVIDER_TYPES,
     DEFAULT_AUDIO_NATIVE_MAX_INACTIVE_SECONDS,
     DEFAULT_AUDIO_NATIVE_PROVIDER,
-    DEFAULT_BUFFER_UNTIL_COMPLETE,
-    DEFAULT_FAST_FORWARD_MODE,
     DEFAULT_OPENAI_VAD_THRESHOLD,
     DEFAULT_SEND_AUDIO_INSTANT,
 )
@@ -82,9 +80,7 @@ from tau2.voice.audio_native.adapter import DiscreteTimeAdapter, create_adapter
 from tau2.voice.audio_native.tick_result import TickResult
 
 # Provider type alias
-AudioNativeProvider = Literal[
-    "openai", "gemini", "xai", "nova", "qwen", "livekit"
-]
+AudioNativeProvider = Literal["openai", "gemini", "xai", "nova", "qwen", "livekit"]
 
 # VAD config union type (string annotations for lazy resolution)
 VADConfig = Union[
@@ -213,8 +209,6 @@ class DiscreteTimeAudioNativeAgent(FullDuplexAgent[DiscreteTimeAgentState]):
         max_inactive_seconds: float = DEFAULT_AUDIO_NATIVE_MAX_INACTIVE_SECONDS,
         use_xml_prompt: bool = False,
         cascaded_config: Optional["CascadedConfig"] = None,
-        buffer_until_complete: bool = DEFAULT_BUFFER_UNTIL_COMPLETE,
-        fast_forward_mode: bool = DEFAULT_FAST_FORWARD_MODE,
         audio_taps_dir: Optional[Path] = None,
     ):
         """Initialize the discrete-time audio native agent.
@@ -247,20 +241,12 @@ class DiscreteTimeAudioNativeAgent(FullDuplexAgent[DiscreteTimeAgentState]):
                 Only used when provider="livekit". Ignored for other providers.
                 Can be a CascadedConfig instance or None to use defaults.
             audio_taps_dir: Directory to save audio taps. Only used when audio_taps_dir is not None.
-            buffer_until_complete: If True, wait until an utterance is complete
-                        before including its audio/text in results.
-                        Only supported by the OpenAI provider.
-            fast_forward_mode: If True, exit tick early when we have enough audio
-                buffered (>= bytes_per_tick), rather than waiting for wall-clock time.
-                Only supported by the OpenAI provider.
         """
         self.tools = tools
         self.domain_policy = domain_policy
         self.tick_duration_ms = tick_duration_ms
         self.modality = modality
         self.send_audio_instant = send_audio_instant
-        self.buffer_until_complete = buffer_until_complete
-        self.fast_forward_mode = fast_forward_mode
         self.provider = provider
         self.use_xml_prompt = use_xml_prompt
         self.model = model
@@ -375,8 +361,6 @@ class DiscreteTimeAudioNativeAgent(FullDuplexAgent[DiscreteTimeAgentState]):
                 provider=self.provider,
                 tick_duration_ms=self.tick_duration_ms,
                 send_audio_instant=self.send_audio_instant,
-                buffer_until_complete=self.buffer_until_complete,
-                fast_forward_mode=self.fast_forward_mode,
                 model=self.model,
                 audio_format=self.audio_format,
                 cascaded_config=self.cascaded_config,
@@ -812,8 +796,7 @@ def create_discrete_time_audio_native_agent(tools, domain_policy, **kwargs):
         **kwargs: Additional arguments. Supports:
             - audio_native_config: AudioNativeConfig with provider settings.
               If provided, the following fields are extracted from it:
-              tick_duration_ms, send_audio_instant, buffer_until_complete,
-              fast_forward_mode, provider, model, use_xml_prompt.
+              tick_duration_ms, send_audio_instant, provider, model, use_xml_prompt.
             - Individual overrides for any of the above fields.
     """
     audio_native_config = kwargs.get("audio_native_config")
@@ -825,8 +808,6 @@ def create_discrete_time_audio_native_agent(tools, domain_policy, **kwargs):
             tick_duration_ms=audio_native_config.tick_duration_ms,
             modality="audio",
             send_audio_instant=audio_native_config.send_audio_instant,
-            buffer_until_complete=audio_native_config.buffer_until_complete,
-            fast_forward_mode=audio_native_config.fast_forward_mode,
             provider=audio_native_config.provider,
             model=audio_native_config.model,
             use_xml_prompt=audio_native_config.use_xml_prompt,

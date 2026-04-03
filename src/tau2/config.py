@@ -98,12 +98,12 @@ DEFAULT_SPEECH_COMPLEXITY = "regular"  # overridable: "control", "regular"
 # =============================================================================
 DEFAULT_AUDIO_NATIVE_AGENT_IMPLEMENTATION = "discrete_time_audio_native_agent"
 DEFAULT_AUDIO_NATIVE_USER_IMPLEMENTATION = "voice_streaming_user_simulator"
-DEFAULT_AUDIO_NATIVE_PROVIDER = "openai"  # overridable: openai, gemini, xai, nova, qwen, livekit
+DEFAULT_AUDIO_NATIVE_PROVIDER = (
+    "openai"  # overridable: openai, gemini, xai, nova, qwen, livekit
+)
 DEFAULT_TICK_DURATION_SECONDS = 0.20  # overridable
 DEFAULT_MAX_STEPS_SECONDS = 600  # overridable, 10 minutes max
 DEFAULT_SEND_AUDIO_INSTANT = False  # overridable
-DEFAULT_BUFFER_UNTIL_COMPLETE = False  # overridable (deprecated, unused)
-DEFAULT_FAST_FORWARD_MODE = False  # overridable (deprecated, unused)
 
 # Turn-taking thresholds (overridable, in seconds, converted to ticks at runtime)
 DEFAULT_WAIT_TO_RESPOND_THRESHOLD_OTHER_SECONDS = 1.0
@@ -181,7 +181,9 @@ DEFAULT_NOVA_OUTPUT_SAMPLE_RATE = 24000  # fixed, API-defined
 # =============================================================================
 # QWEN PROVIDER (overridable model/voice, fixed API constants)
 # =============================================================================
-DEFAULT_QWEN_REALTIME_URL = "wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime"  # fixed
+DEFAULT_QWEN_REALTIME_URL = (
+    "wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime"  # fixed
+)
 DEFAULT_QWEN_MODEL = "qwen3-omni-flash-realtime"  # overridable
 DEFAULT_QWEN_VOICE = "Cherry"  # overridable
 DEFAULT_QWEN_INPUT_SAMPLE_RATE = 16000  # fixed, API-defined
