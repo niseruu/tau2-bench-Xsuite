@@ -1,0 +1,145 @@
+{
+  "datasets": {
+    "dataset_legal_core": {
+      "id": "dataset_legal_core",
+      "name": "AssistXSuite Legal Core",
+      "description": "Mock legal and compliance corpus used for deterministic AssistXSuite-style retrieval.",
+      "document_ids": [
+        "doc_confidentiality_001",
+        "doc_dpa_security_001",
+        "doc_subprocessors_001",
+        "doc_renewal_termination_001"
+      ]
+    }
+  },
+  "documents": {
+    "doc_confidentiality_001": {
+      "id": "doc_confidentiality_001",
+      "dataset_id": "dataset_legal_core",
+      "title": "Confidentiality and Use Restrictions",
+      "content": "Each party must protect Confidential Information with reasonable care and may use it only to perform the agreement. The confidentiality obligations survive for three years after termination, except trade secrets remain protected for as long as they qualify as trade secrets.",
+      "metadata": {
+        "category": "confidentiality",
+        "jurisdiction": "US",
+        "audience": "vendor",
+        "version": "2026-01"
+      },
+      "doc_type": "policy",
+      "chunks": [
+        {
+          "id": "chunk_confidentiality_001",
+          "content": "Each party must protect Confidential Information with reasonable care and may use it only to perform the agreement.",
+          "positions": [[1, 1, 1, 1, 1]]
+        },
+        {
+          "id": "chunk_confidentiality_002",
+          "content": "The confidentiality obligations survive for three years after termination, except trade secrets remain protected for as long as they qualify as trade secrets.",
+          "positions": [[2, 2, 2, 2, 2]]
+        }
+      ]
+    },
+    "doc_dpa_security_001": {
+      "id": "doc_dpa_security_001",
+      "dataset_id": "dataset_legal_core",
+      "title": "Data Processing and Security Terms",
+      "content": "The processor will maintain encryption in transit and encryption at rest for customer data, along with role-based access controls and annual security training. The processor must notify the controller of a confirmed personal data breach without undue delay and no later than 72 hours after confirmation.",
+      "metadata": {
+        "category": "security",
+        "jurisdiction": "EU",
+        "audience": "enterprise",
+        "version": "2026-02"
+      },
+      "doc_type": "dpa",
+      "chunks": [
+        {
+          "id": "chunk_security_001",
+          "content": "The processor will maintain encryption in transit and encryption at rest for customer data, along with role-based access controls and annual security training.",
+          "positions": [[1, 1, 1, 1, 1]]
+        },
+        {
+          "id": "chunk_security_002",
+          "content": "The processor must notify the controller of a confirmed personal data breach without undue delay and no later than 72 hours after confirmation.",
+          "positions": [[2, 2, 2, 2, 2]]
+        }
+      ]
+    },
+    "doc_subprocessors_001": {
+      "id": "doc_subprocessors_001",
+      "dataset_id": "dataset_legal_core",
+      "title": "Subprocessor and Vendor Management Policy",
+      "content": "The vendor may not add a new subprocessor without giving prior written notice to the customer. Notice of a material subprocessor change must be provided at least 10 business days before the new subprocessor begins processing customer data. All subprocessors must be bound by written terms that are no less protective than this DPA.",
+      "metadata": {
+        "category": "vendor-management",
+        "jurisdiction": "US",
+        "audience": "enterprise",
+        "version": "2026-03"
+      },
+      "doc_type": "policy",
+      "chunks": [
+        {
+          "id": "chunk_subprocessors_001",
+          "content": "The vendor may not add a new subprocessor without giving prior written notice to the customer.",
+          "positions": [[1, 1, 1, 1, 1]]
+        },
+        {
+          "id": "chunk_subprocessors_002",
+          "content": "Notice of a material subprocessor change must be provided at least 10 business days before the new subprocessor begins processing customer data.",
+          "positions": [[2, 2, 2, 2, 2]]
+        },
+        {
+          "id": "chunk_subprocessors_003",
+          "content": "All subprocessors must be bound by written terms that are no less protective than this DPA.",
+          "positions": [[3, 3, 3, 3, 3]]
+        }
+      ]
+    },
+    "doc_renewal_termination_001": {
+      "id": "doc_renewal_termination_001",
+      "dataset_id": "dataset_legal_core",
+      "title": "Renewal and Termination Schedule",
+      "content": "The initial term is 12 months and the agreement auto-renews for successive one-year renewal terms unless either party gives notice of non-renewal. A party must provide at least 30 days written notice before the end of the current term to opt out of auto-renewal. A material breach must be cured within 15 days after written notice or the non-breaching party may terminate immediately.",
+      "metadata": {
+        "category": "commercial-terms",
+        "jurisdiction": "US",
+        "audience": "procurement",
+        "version": "2026-04"
+      },
+      "doc_type": "msa",
+      "chunks": [
+        {
+          "id": "chunk_renewal_001",
+          "content": "The initial term is 12 months and the agreement auto-renews for successive one-year renewal terms unless either party gives notice of non-renewal.",
+          "positions": [[1, 1, 1, 1, 1]]
+        },
+        {
+          "id": "chunk_renewal_002",
+          "content": "A party must provide at least 30 days written notice before the end of the current term to opt out of auto-renewal.",
+          "positions": [[2, 2, 2, 2, 2]]
+        },
+        {
+          "id": "chunk_renewal_003",
+          "content": "A material breach must be cured within 15 days after written notice or the non-breaching party may terminate immediately.",
+          "positions": [[3, 3, 3, 3, 3]]
+        }
+      ]
+    }
+  },
+  "chat_assistants": {
+    "chat_legal_assistant": {
+      "id": "chat_legal_assistant",
+      "name": "AssistXSuite Legal Chat",
+      "description": "Mock chat assistant grounded in the legal corpus.",
+      "dataset_ids": ["dataset_legal_core"],
+      "opener": "Hi, I can answer legal corpus questions with citations."
+    }
+  },
+  "agents": {
+    "agent_contract_reviewer": {
+      "id": "agent_contract_reviewer",
+      "title": "AssistXSuite Contract Reviewer",
+      "description": "Mock agent that reviews contract language using the legal corpus.",
+      "dataset_ids": ["dataset_legal_core"]
+    }
+  }
+}
+

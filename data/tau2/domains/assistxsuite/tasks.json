@@ -1,0 +1,134 @@
+[
+  {
+    "id": "assistxsuite_chat_001",
+    "description": {
+      "purpose": "Test the AssistXSuite mock chat pipeline for grounded legal answers.",
+      "relevant_policies": "Use the chat pipeline with citations for standard legal Q&A.",
+      "notes": "The response should cite the security and breach-notice language."
+    },
+    "user_scenario": {
+      "persona": "A concise compliance lead who wants grounded answers and explicit source support.",
+      "instructions": {
+        "domain": "assistxsuite",
+        "reason_for_call": "You need a grounded answer from the legal corpus about breach notice timing and security controls.",
+        "known_info": "You only trust answers that are backed by cited legal text.",
+        "unknown_info": "You do not know which document contains the relevant clause.",
+        "task_instructions": "Ask the agent: 'Use the legal chat pipeline and tell me how quickly the vendor must notify us after a confirmed breach, and which security controls are explicitly required.'"
+      }
+    },
+    "ticket": "Use the legal chat pipeline and tell me how quickly the vendor must notify us after a confirmed breach, and which security controls are explicitly required.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "assistxsuite_chat_001_0",
+          "name": "chat_pipeline_completion",
+          "arguments": {
+            "chat_id": "chat_legal_assistant",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Use the legal chat pipeline and tell me how quickly the vendor must notify us after a confirmed breach, and which security controls are explicitly required."
+              }
+            ],
+            "extra_body": {
+              "reference": true
+            }
+          },
+          "compare_args": ["chat_id", "messages", "extra_body"]
+        }
+      ],
+      "communicate_info": [
+        "72 hours",
+        "encryption at rest",
+        "encryption in transit"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    },
+    "required_documents": ["doc_dpa_security_001"]
+  },
+  {
+    "id": "assistxsuite_agent_001",
+    "description": {
+      "purpose": "Test the AssistXSuite mock agent pipeline for contract-review style reasoning.",
+      "relevant_policies": "Use the agent pipeline for review-oriented legal analysis.",
+      "notes": "The answer should identify the notice requirement for subprocessors."
+    },
+    "user_scenario": {
+      "persona": "A practical procurement manager who wants a review-style answer without legal fluff.",
+      "instructions": {
+        "domain": "assistxsuite",
+        "reason_for_call": "You want the agent pipeline to review whether new subprocessors can be added silently.",
+        "known_info": "You care about change-control and notice timing.",
+        "unknown_info": "You do not know whether the contract allows silent subprocessor changes.",
+        "task_instructions": "Ask the agent: 'Use the contract-review agent pipeline and tell me whether the vendor can add subprocessors silently, and how much notice they owe before a material change.'"
+      }
+    },
+    "ticket": "Use the contract-review agent pipeline and tell me whether the vendor can add subprocessors silently, and how much notice they owe before a material change.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "assistxsuite_agent_001_0",
+          "name": "agent_pipeline_completion",
+          "arguments": {
+            "agent_id": "agent_contract_reviewer",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Use the contract-review agent pipeline and tell me whether the vendor can add subprocessors silently, and how much notice they owe before a material change."
+              }
+            ]
+          },
+          "compare_args": ["agent_id", "messages"]
+        }
+      ],
+      "communicate_info": [
+        "prior written notice",
+        "10 business days"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    },
+    "required_documents": ["doc_subprocessors_001"]
+  },
+  {
+    "id": "assistxsuite_retrieval_001",
+    "description": {
+      "purpose": "Test the AssistXSuite mock retrieval tool for direct clause lookup.",
+      "relevant_policies": "Use the retrieval tool when the user asks to locate source clauses directly.",
+      "notes": "The response should cite the renewal clause rather than relying on free-form explanation alone."
+    },
+    "user_scenario": {
+      "persona": "An operations manager who wants the exact source clause before making a renewal decision.",
+      "instructions": {
+        "domain": "assistxsuite",
+        "reason_for_call": "You want the agent to locate the auto-renewal clause and the notice deadline.",
+        "known_info": "You need the source clause itself, not only a summary.",
+        "unknown_info": "You do not know which legal document contains the renewal language.",
+        "task_instructions": "Ask the agent: 'Use the retrieval tool to find the auto-renewal clause and the notice required to opt out before renewal, then summarize it for me.'"
+      }
+    },
+    "ticket": "Use the retrieval tool to find the auto-renewal clause and the notice required to opt out before renewal, then summarize it for me.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "assistxsuite_retrieval_001_0",
+          "name": "ragflow_retrieval",
+          "arguments": {
+            "question": "Find the auto-renewal clause and the notice required to opt out before renewal.",
+            "dataset_ids": ["dataset_legal_core"]
+          },
+          "compare_args": ["question", "dataset_ids"]
+        }
+      ],
+      "communicate_info": [
+        "auto-renew",
+        "30 days"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    },
+    "required_documents": ["doc_renewal_termination_001"]
+  }
+]
+

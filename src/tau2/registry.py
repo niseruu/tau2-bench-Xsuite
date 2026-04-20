@@ -22,6 +22,15 @@ from tau2.domains.airline.environment import get_tasks as airline_domain_get_tas
 from tau2.domains.airline.environment import (
     get_tasks_split as airline_domain_get_tasks_split,
 )
+from tau2.domains.assistxsuite.environment import (
+    get_environment as assistxsuite_domain_get_environment,
+)
+from tau2.domains.assistxsuite.environment import (
+    get_tasks as assistxsuite_domain_get_tasks,
+)
+from tau2.domains.assistxsuite.environment import (
+    get_tasks_split as assistxsuite_domain_get_tasks_split,
+)
 from tau2.domains.banking_knowledge.environment import (
     get_environment as knowledge_domain_get_environment,
 )
@@ -312,6 +321,13 @@ try:
     )
     registry.register_domain(mock_domain_get_environment, "mock")
     registry.register_tasks(mock_domain_get_tasks, "mock")
+
+    registry.register_domain(assistxsuite_domain_get_environment, "assistxsuite")
+    registry.register_tasks(
+        assistxsuite_domain_get_tasks,
+        "assistxsuite",
+        get_task_splits=assistxsuite_domain_get_tasks_split,
+    )
 
     registry.register_domain(airline_domain_get_environment, "airline")
     registry.register_tasks(

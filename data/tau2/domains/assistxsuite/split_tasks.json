@@ -1,0 +1,11 @@
+{
+  "base": [
+    "assistxsuite_chat_001",
+    "assistxsuite_agent_001",
+    "assistxsuite_retrieval_001"
+  ],
+  "chat": ["assistxsuite_chat_001"],
+  "agent": ["assistxsuite_agent_001"],
+  "retrieval": ["assistxsuite_retrieval_001"]
+}
+

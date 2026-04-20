@@ -52,10 +52,14 @@ pytest tests/test_domains/test_<domain_name>
 | Domain | Description |
 |--------|-------------|
 | `mock` | Lightweight test domain for development |
+| `assistxsuite` | Mock legal-RAG domain that emulates AssistXSuite chat, agent, and retrieval workflows |
 | `airline` | Flight booking, cancellation, and customer support |
 | `retail` | Order management, returns, and product inquiries |
 | `telecom` | Telecom account management and troubleshooting |
 | `banking_knowledge` | Knowledge-retrieval-based banking customer service with configurable RAG pipelines |
+
+See also:
+- `src/tau2/domains/assistxsuite/README.md` for a concrete walkthrough of how a new mock domain is structured and implemented.
 
 ### `banking_knowledge` Domain
 
@@ -78,4 +82,3 @@ from tau2.domains.your_domain.environment import get_tasks_split as your_domain_
 registry.register_domain(your_domain_get_environment, "your_domain_name")
 registry.register_tasks(your_domain_get_tasks, "your_domain_name", get_task_splits=your_domain_get_tasks_split)
 ```
-
