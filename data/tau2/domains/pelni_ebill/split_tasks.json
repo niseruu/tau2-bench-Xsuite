@@ -1,0 +1,24 @@
+{
+  "base": [
+    "pelni_ebill_invoice_num_001",
+    "pelni_ebill_vendor_bill_001",
+    "pelni_ebill_invoice_keyword_001",
+    "pelni_ebill_tutorial_clarify_001",
+    "pelni_ebill_tutorial_kb_001",
+    "pelni_ebill_tax_tariff_001",
+    "pelni_ebill_refusal_001"
+  ],
+  "invoice": [
+    "pelni_ebill_invoice_num_001",
+    "pelni_ebill_vendor_bill_001",
+    "pelni_ebill_invoice_keyword_001"
+  ],
+  "knowledge": [
+    "pelni_ebill_tutorial_kb_001",
+    "pelni_ebill_tax_tariff_001"
+  ],
+  "communication": [
+    "pelni_ebill_tutorial_clarify_001",
+    "pelni_ebill_refusal_001"
+  ]
+}

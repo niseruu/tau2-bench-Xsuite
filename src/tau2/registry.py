@@ -39,6 +39,15 @@ from tau2.domains.banking_knowledge.environment import (
 )
 from tau2.domains.mock.environment import get_environment as mock_domain_get_environment
 from tau2.domains.mock.environment import get_tasks as mock_domain_get_tasks
+from tau2.domains.pelni_ebill.environment import (
+    get_environment as pelni_ebill_domain_get_environment,
+)
+from tau2.domains.pelni_ebill.environment import (
+    get_tasks as pelni_ebill_domain_get_tasks,
+)
+from tau2.domains.pelni_ebill.environment import (
+    get_tasks_split as pelni_ebill_domain_get_tasks_split,
+)
 from tau2.domains.retail.environment import (
     get_environment as retail_domain_get_environment,
 )
@@ -327,6 +336,13 @@ try:
         assistxsuite_domain_get_tasks,
         "assistxsuite",
         get_task_splits=assistxsuite_domain_get_tasks_split,
+    )
+
+    registry.register_domain(pelni_ebill_domain_get_environment, "pelni_ebill")
+    registry.register_tasks(
+        pelni_ebill_domain_get_tasks,
+        "pelni_ebill",
+        get_task_splits=pelni_ebill_domain_get_tasks_split,
     )
 
     registry.register_domain(airline_domain_get_environment, "airline")

@@ -359,7 +359,33 @@ class AssistXSuiteTools(ToolKitBase):
         messages: list[dict[str, Any]],
         extra_body: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Run a mock OpenAI-style chat completion against the legal corpus."""
+        """Run the AssistXSuite legal chat pipeline over the mock legal corpus.
+
+        Use this tool for standard legal Q&A, grounded legal answers, and chat
+        answers that need citations or source references. The tool reads the
+        latest non-empty `user` message from `messages`, retrieves matching
+        legal corpus chunks from the chat assistant's datasets, and returns an
+        OpenAI-style non-streaming chat completion payload.
+
+        Args:
+            chat_id: The chat assistant id to use. For the seeded AssistXSuite
+                legal chat workflow, use `chat_legal_assistant`.
+            messages: Chat messages in OpenAI-style format. Include the user's
+                legal question as the latest message with `role` set to `user`.
+            extra_body: Optional chat options. Set `{"reference": true}` when
+                the user asks for citations, source support, references, or a
+                grounded answer. May also include `metadata_condition` to filter
+                retrieved documents by metadata.
+
+        Returns:
+            An OpenAI-style chat completion dictionary with one assistant
+            message. When `extra_body.reference` is true, the assistant message
+            includes retrieved chunk references and document aggregates.
+
+        Raises:
+            ValueError: If `chat_id` is unknown, `messages` is empty, or no
+                non-empty user message is present.
+        """
 
         chat = self._get_chat_assistant(chat_id)
         question = self._get_latest_user_message(messages)
@@ -419,7 +445,36 @@ class AssistXSuiteTools(ToolKitBase):
         inputs: dict[str, Any] | None = None,
         return_trace: bool = False,
     ) -> dict[str, Any]:
-        """Run a mock agent completion using message-based input."""
+        """Run the AssistXSuite contract-review agent pipeline.
+
+        Use this tool for contract-review style analysis, review-oriented legal
+        summaries, and requests that explicitly mention the contract-review
+        agent pipeline. The tool reads the latest non-empty `user` message from
+        `messages`, retrieves matching legal corpus chunks from the agent's
+        datasets, and returns a grounded non-streaming agent completion payload.
+
+        Args:
+            agent_id: The contract-review agent id to use. For the seeded
+                AssistXSuite review workflow, use `agent_contract_reviewer`.
+            messages: Chat messages in OpenAI-style format. Include the user's
+                contract-review request as the latest message with `role` set to
+                `user`.
+            session_id: Optional session id to echo in the response. If omitted,
+                the mock tool creates a deterministic session id for the agent.
+            inputs: Optional structured inputs to echo in the response, such as
+                form values or workflow metadata supplied by the user.
+            return_trace: Whether to include a deterministic mock trace showing
+                the begin, retrieval, and message nodes.
+
+        Returns:
+            An OpenAI-style agent completion dictionary with one grounded
+            assistant message and references. If `return_trace` is true, the
+            response also includes a deterministic mock execution trace.
+
+        Raises:
+            ValueError: If `agent_id` is unknown, `messages` is empty, or no
+                non-empty user message is present.
+        """
 
         agent = self._get_agent_definition(agent_id)
         question = self._get_latest_user_message(messages)
@@ -513,7 +568,41 @@ class AssistXSuiteTools(ToolKitBase):
         keyword: bool = False,
         metadata_condition: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Run a mock MCP-style retrieval call over the legal corpus."""
+        """Retrieve source clauses or passages directly from the legal corpus.
+
+        Use this tool when the user asks for direct clause lookup, source
+        material, passages, retrieved chunks, or the retrieval tool rather than
+        a generated chat or agent answer. The tool searches the requested
+        datasets, optionally narrows by document ids or metadata, and returns
+        matching chunks with pagination metadata.
+
+        Args:
+            question: The focused source-material query to retrieve against,
+                such as "Find the auto-renewal clause and opt-out notice".
+            dataset_ids: Dataset ids to search. For the seeded AssistXSuite
+                legal corpus, use `["dataset_legal_core"]`.
+            document_ids: Optional document ids to restrict retrieval to, such
+                as `["doc_dpa_security_001"]`.
+            page: One-based page number for paginated chunk results.
+            page_size: Number of chunks to return on the requested page.
+            similarity_threshold: Minimum combined similarity score required for
+                a chunk to be returned.
+            vector_similarity_weight: Weight assigned to the mock vector
+                similarity score when combining lexical and vector-like scores.
+            top_k: Maximum number of ranked chunks to keep before pagination.
+            keyword: Whether the request should be treated as keyword-oriented.
+                This is echoed in `query_info`; ranking remains deterministic.
+            metadata_condition: Optional RAGFlow-style metadata filter with
+                `logic` and `conditions` entries.
+
+        Returns:
+            A retrieval dictionary containing matching `chunks`, `pagination`,
+            and `query_info`.
+
+        Raises:
+            ValueError: If `question` is empty, paging values are invalid, or an
+                unknown dataset or document id is requested.
+        """
 
         retrieval = self._retrieve_chunks(
             question=question,

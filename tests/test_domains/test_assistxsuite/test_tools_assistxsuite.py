@@ -191,6 +191,43 @@ def test_ragflow_retrieval_metadata_filter(environment):
     assert filtered_out["chunks"] == []
 
 
+def test_assistxsuite_tool_schemas_include_agent_guidance(environment):
+    tools = {tool.name: tool.openai_schema for tool in environment.get_tools()}
+
+    chat_tool = tools["chat_pipeline_completion"]["function"]
+    assert "legal chat pipeline" in chat_tool["description"]
+    assert "chat_legal_assistant" in chat_tool["parameters"]["properties"]["chat_id"][
+        "description"
+    ]
+    assert "reference" in chat_tool["parameters"]["properties"]["extra_body"][
+        "description"
+    ]
+    assert "latest message" in chat_tool["parameters"]["properties"]["messages"][
+        "description"
+    ]
+
+    agent_tool = tools["agent_pipeline_completion"]["function"]
+    assert "contract-review agent pipeline" in agent_tool["description"]
+    assert "agent_contract_reviewer" in agent_tool["parameters"]["properties"][
+        "agent_id"
+    ]["description"]
+    assert "mock trace" in agent_tool["parameters"]["properties"]["return_trace"][
+        "description"
+    ]
+    assert "session id" in agent_tool["parameters"]["properties"]["session_id"][
+        "description"
+    ]
+
+    retrieval_tool = tools["ragflow_retrieval"]["function"]
+    assert "source clauses" in retrieval_tool["description"]
+    assert "dataset_legal_core" in retrieval_tool["parameters"]["properties"][
+        "dataset_ids"
+    ]["description"]
+    assert "metadata filter" in retrieval_tool["parameters"]["properties"][
+        "metadata_condition"
+    ]["description"]
+
+
 def test_get_environment_and_task_wiring():
     environment = get_environment()
     tasks = get_tasks()
@@ -213,4 +250,3 @@ def test_registry_exposes_assistxsuite_domain_and_tasks():
 
     assert env_constructor().get_domain_name() == "assistxsuite"
     assert len(tasks_loader("base")) == 3
-

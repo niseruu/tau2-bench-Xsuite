@@ -53,6 +53,7 @@ pytest tests/test_domains/test_<domain_name>
 |--------|-------------|
 | `mock` | Lightweight test domain for development |
 | `assistxsuite` | Mock legal-RAG domain that emulates AssistXSuite chat, agent, and retrieval workflows |
+| `pelni_ebill` | Deterministic PELNI e-Billing chatbot domain with invoice progress lookup and KB retrieval |
 | `airline` | Flight booking, cancellation, and customer support |
 | `retail` | Order management, returns, and product inquiries |
 | `telecom` | Telecom account management and troubleshooting |

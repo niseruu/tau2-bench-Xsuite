@@ -1,0 +1,314 @@
+{
+  "session_context": {
+    "utk_kode": "UTK-JKT-001",
+    "is_all": "false",
+    "segment_divisi": "KEU"
+  },
+  "knowledge_chunks": [
+    {
+      "id": "kb_tutorial_pusat_001",
+      "title": "Panduan Input Invoice Pusat",
+      "topic": "Tutorial Penggunaan e-Billing",
+      "keywords": ["cara input invoice di pusat", "panduan pusat", "submit invoice", "e-billing pusat"],
+      "content": "Untuk input invoice di Pusat, buka menu e-Billing, pilih Input Invoice, lengkapi data supplier, nomor tagihan vendor, deskripsi pekerjaan, nominal DPP, PPN/VAT, dan lampiran pendukung. Setelah data lengkap, simpan sebagai Draft lalu kirim untuk proses pengecekan oleh checker. Pastikan nomor tagihan vendor dan nominal sudah sesuai sebelum submit."
+    },
+    {
+      "id": "kb_tutorial_pusat_ubah_001",
+      "title": "Panduan Ubah Invoice Pusat",
+      "topic": "Tutorial Penggunaan e-Billing",
+      "keywords": ["tutorial ubah invoice", "edit invoice pusat", "revisi invoice pusat", "ubah data invoice"],
+      "content": "Untuk mengubah invoice di Pusat, buka daftar invoice, pilih invoice yang masih dapat direvisi, lalu periksa data supplier, nomor tagihan vendor, deskripsi, nominal, pajak, dan lampiran. Perubahan hanya dilakukan sebelum invoice masuk tahap akhir pembayaran. Setelah revisi selesai, simpan kembali sebagai Draft dan kirim ulang ke checker sesuai alur e-Billing."
+    },
+    {
+      "id": "kb_tutorial_pusat_batal_001",
+      "title": "Panduan Batalkan Invoice Pusat",
+      "topic": "Tutorial Penggunaan e-Billing",
+      "keywords": ["cara batalkan invoice", "membatalkan invoice", "cancel invoice pusat", "invoice canceled"],
+      "content": "Untuk membatalkan invoice, pastikan invoice belum selesai diproses pembayaran. Buka detail invoice, pilih tindakan pembatalan jika tersedia, isi alasan pembatalan, lalu kirim untuk persetujuan sesuai kewenangan. Status Canceled berarti invoice atau payment dibatalkan dan tidak dilanjutkan ke proses pembayaran."
+    },
+    {
+      "id": "kb_tutorial_cabang_001",
+      "title": "Panduan Input Invoice Cabang",
+      "topic": "Tutorial Penggunaan e-Billing",
+      "keywords": ["panduan cabang", "input invoice cabang", "e-billing cabang"],
+      "content": "Untuk Cabang, input invoice dilakukan melalui menu e-Billing Cabang. Lengkapi data operating unit, supplier, nomor tagihan vendor, deskripsi, nilai invoice, dan dokumen pendukung. Setelah disimpan, invoice dikirim ke checker cabang untuk validasi sebelum diproses ke tahap berikutnya."
+    },
+    {
+      "id": "kb_status_approved_001",
+      "title": "Keterangan Status Approved",
+      "topic": "Keterangan Status Invoice",
+      "keywords": ["keterangan status approved", "arti approved", "status invoice approved"],
+      "content": "Status Approved berarti invoice telah disetujui oleh approver akhir di user. Setelah status ini, proses dapat dilanjutkan ke pengecekan atau verifikasi akuntansi sesuai alur e-Billing yang berlaku."
+    },
+    {
+      "id": "kb_status_all_001",
+      "title": "Daftar Status e-Billing",
+      "topic": "Keterangan Status Invoice",
+      "keywords": ["keterangan status e-billing", "status invoice", "progress invoice"],
+      "content": "Status e-Billing meliputi Draft, Waiting Approval, Approved, Checked, Validate, Payment Verification, Payment Process, Payment Approved, Verification, Canceled, Waiting Release, Release, Waiting Clearing, dan Cleared. Setiap status menunjukkan tahapan proses invoice dari penyimpanan draft sampai clearing."
+    },
+    {
+      "id": "kb_status_payment_process_001",
+      "title": "Keterangan Status Payment Process",
+      "topic": "Keterangan Status Invoice",
+      "keywords": ["keterangan status payment process", "arti payment process", "status payment process", "treasury"],
+      "content": "Status Payment Process berarti invoice sedang diproses pembayaran oleh Treasury. Pada tahap ini dokumen pembayaran telah melewati verifikasi sebelumnya dan menunggu penyelesaian proses pembayaran sesuai jadwal serta persetujuan yang berlaku."
+    },
+    {
+      "id": "kb_status_release_clearing_001",
+      "title": "Keterangan Status Release dan Clearing",
+      "topic": "Keterangan Status Invoice",
+      "keywords": ["waiting release", "release", "waiting clearing", "cleared", "dokumen rilis", "clearing ebs"],
+      "content": "Waiting Release berarti proses input dokumen rilis ke EBS sedang berjalan. Release berarti invoice sudah dirilis. Waiting Clearing berarti proses input dokumen clearing ke EBS sedang berjalan. Cleared berarti invoice sudah di-clearing dan tahap clearing selesai."
+    },
+    {
+      "id": "kb_accounting_policy_001",
+      "title": "Pedoman Akuntansi Invoice",
+      "topic": "Pedoman Akuntansi Keuangan PELNI",
+      "keywords": ["pedoman akuntansi", "prosedur akuntansi invoice", "kebijakan akuntansi keuangan pelni"],
+      "content": "Pedoman Akuntansi Keuangan PELNI mengatur bahwa invoice harus memiliki dokumen pendukung yang lengkap, nilai transaksi yang sesuai dengan dokumen sumber, serta klasifikasi akun yang benar sebelum proses verifikasi akuntansi. Invoice yang tidak lengkap dapat dikembalikan untuk revisi."
+    },
+    {
+      "id": "kb_accounting_supporting_docs_001",
+      "title": "Kelengkapan Dokumen Pendukung Invoice",
+      "topic": "Pedoman Akuntansi Keuangan PELNI",
+      "keywords": ["dokumen pendukung", "verifikasi akuntansi", "invoice tidak lengkap", "klasifikasi akun"],
+      "content": "Sebelum invoice diverifikasi akuntansi, dokumen pendukung seperti kontrak atau purchase order, BAST, kwitansi, faktur pajak jika ada, dan bukti pendukung lain harus lengkap serta konsisten dengan nilai invoice. Ketidaksesuaian nominal, supplier, atau klasifikasi akun dapat menyebabkan invoice dikembalikan untuk revisi."
+    },
+    {
+      "id": "kb_pph21_layers_001",
+      "title": "Tarif PPh 21 Orang Pribadi",
+      "topic": "Tarif Pajak",
+      "keywords": ["pph 21", "tarif layer", "layer ke-1", "layer ke-2", "penghasilan kena pajak", "penghasilan 80 juta"],
+      "content": "PPh 21 orang pribadi menggunakan layer tarif penghasilan kena pajak. Layer 1: 5% untuk penghasilan sampai dengan Rp 60.000.000. Layer 2: 15% untuk penghasilan di atas Rp 60.000.000 sampai dengan Rp 250.000.000. Layer 3: 25% untuk penghasilan di atas Rp 250.000.000 sampai dengan Rp 500.000.000. Rumus umum dapat ditampilkan jika tersedia, tetapi jangan menghitung nominal pajak user."
+    },
+    {
+      "id": "kb_pph15_siup_001",
+      "title": "Tarif PPh 15 Jasa Pelayaran",
+      "topic": "Tarif Pajak",
+      "keywords": ["pph 15", "siupal", "jasa angkut", "jasa pelayaran dalam negeri", "kapal"],
+      "content": "PPh 15 digunakan untuk konteks jasa pelayaran atau angkutan tertentu sesuai ketentuan yang berlaku. Untuk jasa pelayaran dalam negeri yang relevan dengan SIUPAL, gunakan informasi tarif dari dokumen pendukung atau knowledge base dan jelaskan konteks pengenaannya tanpa menghitung nominal pajak."
+    },
+    {
+      "id": "kb_pph22_barang_001",
+      "title": "Tarif PPh 22 Pembelian Barang",
+      "topic": "Tarif Pajak",
+      "keywords": ["pph 22", "pembelian barang", "material", "nilai transaksi di atas 10jt", "transaksi pembelian barang material"],
+      "content": "PPh 22 berlaku untuk transaksi pembelian barang atau material dalam konteks tertentu. Untuk transaksi pembelian barang/material di atas Rp 10.000.000, jelaskan tarif dan kondisi pengenaan sesuai hasil knowledge base. Jangan menampilkan daftar PPh lain yang tidak ditanyakan user."
+    },
+    {
+      "id": "kb_pph23_001",
+      "title": "Tarif PPh 23",
+      "topic": "Tarif Pajak",
+      "keywords": ["berapa pph pasal 23", "tarif pph 23", "pph 23 jasa konsultan", "jasa badan usaha dalam negeri"],
+      "content": "PPh 23 dikenakan tarif 2% untuk jasa yang diberikan oleh badan usaha dalam negeri, termasuk jasa konsultansi dan jenis jasa lain yang termasuk objek PPh 23. Syarat utama: penerima penghasilan adalah badan usaha dalam negeri yang terdaftar sebagai wajib pajak."
+    },
+    {
+      "id": "kb_pph26_form_dgt_001",
+      "title": "Tarif PPh 26 Wajib Pajak Luar Negeri",
+      "topic": "Tarif Pajak",
+      "keywords": ["pph 26", "wajib pajak luar negeri", "form dgt", "tanpa form dgt", "bersumber dari indonesia"],
+      "content": "PPh 26 berkaitan dengan penghasilan yang diterima wajib pajak luar negeri dari sumber di Indonesia. Form DGT dapat menjadi dokumen pendukung untuk menerapkan ketentuan perjanjian penghindaran pajak berganda jika memenuhi syarat. Tanpa dokumen pendukung yang valid, gunakan ketentuan umum yang berlaku dan jangan menghitung nominal pajak."
+    },
+    {
+      "id": "kb_pph4_2_sewa_001",
+      "title": "Tarif PPh 4 Ayat 2 Sewa Tanah dan Bangunan",
+      "topic": "Tarif Pajak",
+      "keywords": ["pph 4(2)", "pph 4 ayat 2", "sewa tanah", "sewa bangunan", "sewa tanah dan bangunan"],
+      "content": "PPh Final Pasal 4 ayat 2 digunakan untuk penghasilan tertentu yang bersifat final, termasuk sewa tanah dan/atau bangunan. Jelaskan objek transaksi, tarif, dan syarat pengenaan sesuai knowledge base. Jangan menggabungkan dengan jenis PPh lain kecuali hasil tool secara langsung relevan."
+    },
+    {
+      "id": "kb_pph_final_umkm_001",
+      "title": "PPh Final UMKM",
+      "topic": "Tarif Pajak",
+      "keywords": ["umkm", "pph final umkm", "surat keterangan pph final", "pph final"],
+      "content": "PPh Final UMKM digunakan untuk wajib pajak tertentu yang memenuhi ketentuan UMKM. Jika user menanyakan UMKM atau Surat Keterangan PPh Final, jelaskan konteks tarif dan syarat pengenaannya dari knowledge base tanpa memberikan prosedur administrasi pajak di luar scope e-Billing."
+    },
+    {
+      "id": "kb_pph_konstruksi_001",
+      "title": "PPh Jasa Konstruksi",
+      "topic": "Tarif Pajak",
+      "keywords": ["pekerjaan konstruksi", "jasa konstruksi", "sertifikat badan usaha", "kualifikasi kecil", "sertifikat kompetensi kerja", "konsultansi konstruksi"],
+      "content": "Untuk pekerjaan konstruksi, informasi tarif dapat bergantung pada jenis jasa, sertifikat badan usaha, kualifikasi, dan sertifikat kompetensi kerja. Jika user menanyakan konstruksi yang memiliki sertifikat, tampilkan hanya hasil yang relevan dengan kondisi memiliki sertifikat. Jangan tampilkan kondisi tanpa sertifikat jika tidak ditanyakan."
+    },
+    {
+      "id": "kb_pph_bbm_pertamina_001",
+      "title": "Pajak untuk BBM Pertamina",
+      "topic": "Tarif Pajak",
+      "keywords": ["bbm", "bahan bakar minyak", "pt pertamina", "pajak bbm", "pembelian bbm"],
+      "content": "Untuk transaksi BBM atau Bahan Bakar Minyak dengan PT Pertamina, gunakan informasi tarif pajak yang sesuai dari knowledge base. Jawaban harus fokus pada jenis transaksi yang ditanyakan dan tidak menawarkan perhitungan pajak."
+    },
+    {
+      "id": "kb_ppn_001",
+      "title": "Tarif PPN",
+      "topic": "Tarif Pajak",
+      "keywords": ["tarif ppn", "ppn", "vat", "dpp"],
+      "content": "Tarif PPN adalah 12% dari DPP atau dasar pengenaan pajak sesuai ketentuan yang digunakan dalam e-Billing PELNI. Informasi ini hanya menjelaskan tarif, bukan prosedur administrasi pajak."
+    },
+    {
+      "id": "kb_invoice_teknis_001",
+      "title": "Masalah Teknis Invoice",
+      "topic": "Tutorial Penggunaan e-Billing",
+      "keywords": ["invoice macet", "error sistem", "reset invoice", "masalah teknis invoice"],
+      "content": "Untuk masalah teknis sistem seperti invoice macet, reset, atau error yang tidak dapat diselesaikan melalui alur e-Billing, hubungi IT Support dengan menyertakan nomor invoice, tangkapan layar jika ada, status terakhir, dan detail masalah yang muncul."
+    }
+  ],
+  "invoices": [
+    {
+      "invoice_number": "24120003",
+      "vendor_bill_num": "INV-TRAINING-001",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Asesmen Kompetensi Perilaku dan training pegawai kantor pusat",
+      "supplier_name": "PT Sarel Sentra Inspira",
+      "grand_total": 20400000,
+      "vat_total": 22440000,
+      "status": "Cleared",
+      "updated_date": "2024-12-19 10:05:37"
+    },
+    {
+      "invoice_number": "24120004",
+      "vendor_bill_num": "198/INV/IX/2024",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Tagihan jasa konsultansi implementasi e-Billing bulan September",
+      "supplier_name": "PT Konsultan Nusantara",
+      "grand_total": 55000000,
+      "vat_total": 61050000,
+      "status": "Payment Process",
+      "updated_date": "2024-12-20 09:30:00"
+    },
+    {
+      "invoice_number": "24120005",
+      "vendor_bill_num": "TRN-PELNI-2024-12",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Training penggunaan aplikasi e-Billing untuk tim pusat",
+      "supplier_name": "PT Digital Maritime",
+      "grand_total": 35000000,
+      "vat_total": 38850000,
+      "status": "Waiting Approval",
+      "updated_date": "2024-12-21 11:00:00"
+    },
+    {
+      "invoice_number": "24120006",
+      "vendor_bill_num": "TRAINING-CAB-001",
+      "division_name": "Divisi Operasional",
+      "division_code": "OPS",
+      "location": "SURABAYA",
+      "description": "Training keselamatan operasional cabang Surabaya",
+      "supplier_name": "PT Pelatihan Bahari",
+      "grand_total": 18500000,
+      "vat_total": 20535000,
+      "status": "Approved",
+      "updated_date": "2024-12-22 08:00:00"
+    },
+    {
+      "invoice_number": "24120007",
+      "vendor_bill_num": "TRAINING-KEU-002",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Training rekonsiliasi invoice dan clearing e-Billing",
+      "supplier_name": "PT Akademi Keuangan",
+      "grand_total": 12000000,
+      "vat_total": 13320000,
+      "status": "Release",
+      "updated_date": "2024-12-18 15:45:00"
+    },
+    {
+      "invoice_number": "24120008",
+      "vendor_bill_num": "TRAINING-KEU-003",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Training update SOP invoice payment verification",
+      "supplier_name": "PT Solusi Pelatihan",
+      "grand_total": 9000000,
+      "vat_total": 9990000,
+      "status": "Draft",
+      "updated_date": "2024-12-17 12:00:00"
+    },
+    {
+      "invoice_number": "23110011",
+      "vendor_bill_num": "SQIVA.02/11/2023",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Tagihan SQIVA bulan November 2023 untuk jasa konsultansi aplikasi",
+      "supplier_name": "PT SQIVA Solusi Indonesia",
+      "grand_total": 27500000,
+      "vat_total": 30525000,
+      "status": "Checked",
+      "updated_date": "2024-01-15 14:12:00"
+    },
+    {
+      "invoice_number": "24120009",
+      "vendor_bill_num": "2341123",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Invoice 2341123 untuk pembelian barang material kantor pusat",
+      "supplier_name": "PT Material Bahari",
+      "grand_total": 15750000,
+      "vat_total": 17482500,
+      "status": "Validate",
+      "updated_date": "2024-12-16 09:20:00"
+    },
+    {
+      "invoice_number": "24120010",
+      "vendor_bill_num": "241200035",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Invoice vendor bill 241200035 untuk jasa kebersihan kantor",
+      "supplier_name": "PT Bersih Samudra",
+      "grand_total": 8750000,
+      "vat_total": 9712500,
+      "status": "Payment Verification",
+      "updated_date": "2024-12-15 16:05:00"
+    },
+    {
+      "invoice_number": "25110002",
+      "vendor_bill_num": "27 Nov 2025/002",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Status invoice 27 Nov 2025/002 untuk jasa audit sistem e-Billing",
+      "supplier_name": "PT Audit Teknologi Maritim",
+      "grand_total": 48500000,
+      "vat_total": 53835000,
+      "status": "Waiting Release",
+      "updated_date": "2025-11-27 10:40:00"
+    },
+    {
+      "invoice_number": "24070001",
+      "vendor_bill_num": "JUL/EBILL/2024/001",
+      "division_name": "Divisi Keuangan",
+      "division_code": "KEU",
+      "location": "JAKARTA PUSAT",
+      "description": "Cek tagihan bulan juli untuk maintenance aplikasi e-Billing",
+      "supplier_name": "PT Maintenance Digital",
+      "grand_total": 32000000,
+      "vat_total": 35520000,
+      "status": "Payment Approved",
+      "updated_date": "2024-07-31 13:10:00"
+    },
+    {
+      "invoice_number": "24070002",
+      "vendor_bill_num": "JUL/CAB/SBY/2024",
+      "division_name": "Divisi Operasional",
+      "division_code": "OPS",
+      "location": "SURABAYA",
+      "description": "Cek tagihan bulan juli untuk cabang Surabaya",
+      "supplier_name": "PT Operasi Cabang",
+      "grand_total": 11250000,
+      "vat_total": 12487500,
+      "status": "Approved",
+      "updated_date": "2024-07-30 08:45:00"
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+[
+  {
+    "id": "pelni_ebill_invoice_num_001",
+    "description": {
+      "purpose": "Test invoice progress lookup by exact 8-digit invoice number.",
+      "relevant_policies": "Invoice/status questions must call get_invoice_progress with the exact search term.",
+      "notes": "The answer should communicate status, supplier, total, and the Indonesian status explanation."
+    },
+    "user_scenario": {
+      "persona": "A concise PELNI employee who wants a direct invoice status update.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need to check the progress of one invoice.",
+        "known_info": "The invoice number is 24120003.",
+        "unknown_info": "You do not know its current workflow status.",
+        "task_instructions": "Ask the agent exactly: 'Cek invoice 24120003'."
+      }
+    },
+    "ticket": "Cek invoice 24120003",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pelni_ebill_invoice_num_001_0",
+          "name": "get_invoice_progress",
+          "arguments": {
+            "search_term": "24120003"
+          },
+          "compare_args": ["search_term"]
+        }
+      ],
+      "communicate_info": [
+        "Cleared",
+        "PT Sarel Sentra Inspira",
+        "Rp 20.400.000",
+        "Invoice sudah di-clearing"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_vendor_bill_001",
+    "description": {
+      "purpose": "Test invoice progress lookup by vendor bill number.",
+      "relevant_policies": "Non-8-digit terms must be searched as vendor bill number and description keywords.",
+      "notes": "The answer should not invent a calculation or expose implementation details."
+    },
+    "user_scenario": {
+      "persona": "A vendor-facing staff member checking a supplier bill.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need to check a vendor bill number in e-Billing.",
+        "known_info": "The vendor bill number is 198/INV/IX/2024.",
+        "unknown_info": "You do not know where it is in the payment workflow.",
+        "task_instructions": "Ask the agent exactly: 'Tolong cek tagihan 198/INV/IX/2024'."
+      }
+    },
+    "ticket": "Tolong cek tagihan 198/INV/IX/2024",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pelni_ebill_vendor_bill_001_0",
+          "name": "get_invoice_progress",
+          "arguments": {
+            "search_term": "198/INV/IX/2024"
+          },
+          "compare_args": ["search_term"]
+        }
+      ],
+      "communicate_info": [
+        "Payment Process",
+        "PT Konsultan Nusantara",
+        "Rp 55.000.000",
+        "Sedang diproses pembayaran oleh Treasury"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_invoice_keyword_001",
+    "description": {
+      "purpose": "Test invoice progress lookup by a text keyword.",
+      "relevant_policies": "Invoice-related keywords must call get_invoice_progress with the exact keyword.",
+      "notes": "The default session context should filter to the KEU division and show at most three newest invoices."
+    },
+    "user_scenario": {
+      "persona": "A finance user searching broadly by invoice topic.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need to find recent invoices that mention training.",
+        "known_info": "The relevant keyword is training.",
+        "unknown_info": "You do not know how many matching invoices are visible to your division.",
+        "task_instructions": "Ask the agent exactly: 'Ada invoice tentang training?'."
+      }
+    },
+    "ticket": "Ada invoice tentang training?",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pelni_ebill_invoice_keyword_001_0",
+          "name": "get_invoice_progress",
+          "arguments": {
+            "search_term": "training"
+          },
+          "compare_args": ["search_term"]
+        }
+      ],
+      "communicate_info": [
+        "Ditemukan 4 invoice",
+        "menampilkan 3 terbaru",
+        "24120005",
+        "24120003",
+        "24120007"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_tutorial_clarify_001",
+    "description": {
+      "purpose": "Test tutorial clarification before KB lookup.",
+      "relevant_policies": "Generic e-Billing tutorial requests must ask whether the user means Pusat or Cabang before using the KB tool.",
+      "notes": "The expected response is the exact clarification question."
+    },
+    "user_scenario": {
+      "persona": "A new user asking a broad e-Billing tutorial question.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need a general guide for using e-Billing but have not specified Pusat or Cabang.",
+        "known_info": "You only know you need a generic guide.",
+        "unknown_info": "You have not decided whether you need the Pusat or Cabang flow.",
+        "task_instructions": "Ask the agent exactly: 'Bagaimana cara pakai e-Billing?'."
+      }
+    },
+    "ticket": "Bagaimana cara pakai e-Billing?",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "communicate_info": [
+        "Untuk Pusat atau Cabang?"
+      ],
+      "reward_basis": ["COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_tutorial_kb_001",
+    "description": {
+      "purpose": "Test KB lookup for a Pusat e-Billing tutorial.",
+      "relevant_policies": "Allowed non-invoice questions must call search_knowledge_base with the user's exact query.",
+      "notes": "The answer should summarize the Pusat input-invoice steps from the KB result."
+    },
+    "user_scenario": {
+      "persona": "A PELNI staff member learning the Pusat invoice input flow.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need a procedural answer for inputting an invoice at Pusat.",
+        "known_info": "You are asking about the Pusat flow.",
+        "unknown_info": "You do not know the sequence of steps.",
+        "task_instructions": "Ask the agent exactly: 'Cara input invoice di pusat?'."
+      }
+    },
+    "ticket": "Cara input invoice di pusat?",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pelni_ebill_tutorial_kb_001_0",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Cara input invoice di pusat?"
+          },
+          "compare_args": ["query"]
+        }
+      ],
+      "communicate_info": [
+        "Input Invoice",
+        "supplier",
+        "Draft",
+        "checker"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_tax_tariff_001",
+    "description": {
+      "purpose": "Test KB lookup for PPh 23 tariff guidance.",
+      "relevant_policies": "Tax tariff questions must use search_knowledge_base, and the PPh 23 question should use top_k=1.",
+      "notes": "The answer should communicate the tariff/context without doing math."
+    },
+    "user_scenario": {
+      "persona": "A finance user asking for tax tariff guidance.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You need the applicable PPh 23 tariff context.",
+        "known_info": "You are asking about PPh Pasal 23.",
+        "unknown_info": "You do not know the tariff or applicable service context.",
+        "task_instructions": "Ask the agent exactly: 'berapa pph pasal 23?'."
+      }
+    },
+    "ticket": "berapa pph pasal 23?",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pelni_ebill_tax_tariff_001_0",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "berapa pph pasal 23?",
+            "top_k": 1
+          },
+          "compare_args": ["query", "top_k"]
+        }
+      ],
+      "communicate_info": [
+        "PPh 23",
+        "2%",
+        "jasa",
+        "badan usaha dalam negeri"
+      ],
+      "reward_basis": ["ACTION", "COMMUNICATE"]
+    }
+  },
+  {
+    "id": "pelni_ebill_refusal_001",
+    "description": {
+      "purpose": "Test refusal behavior for unsupported questions.",
+      "relevant_policies": "Out-of-scope requests must use the fixed refusal template and avoid invented answers.",
+      "notes": "The agent should not call a tool for a clearly irrelevant request."
+    },
+    "user_scenario": {
+      "persona": "A user asking an unrelated creative-writing request.",
+      "instructions": {
+        "domain": "pelni_ebill",
+        "reason_for_call": "You ask for something outside the supported e-Billing scope.",
+        "known_info": "Your request is not about e-Billing, invoice progress, accounting guidance, or tax tariff guidance.",
+        "unknown_info": "You do not know whether the chatbot handles unrelated requests.",
+        "task_instructions": "Ask the agent exactly: 'Buatkan puisi tentang laut'."
+      }
+    },
+    "ticket": "Buatkan puisi tentang laut",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "communicate_info": [
+        "Maaf saya tidak menemukan informasi tersebut",
+        "Saya hanya dapat membantu Anda",
+        "Tutorial Penggunaan e-Billing",
+        "Invoice Progress",
+        "Pedoman Akuntansi Keuangan PELNI"
+      ],
+      "reward_basis": ["COMMUNICATE"]
+    }
+  }
+]
